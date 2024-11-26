@@ -1,9 +1,9 @@
 import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
-import studentRouter from './router/studentRouter.js';
-import productRouter from './router/productRouter.js';
-import userRouter from "./router/userRouter.js";
+import productRouter from './routes/productRouter.js';
+import userRouter from "./routes/userRouter.js";
+import jwt from "jsonwebtoken";
 
 
 const app = express();
@@ -42,7 +42,7 @@ app.use(
   
   )
 
-app.use("/api/students",studentRouter)
+
 app.use("/api/products",productRouter)
 app.use("/api/users",userRouter)
 
