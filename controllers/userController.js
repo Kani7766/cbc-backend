@@ -7,6 +7,20 @@ export function createUser(req,res){
 
     const newUserdata = req.body
 
+    if(req.user.type == "admin"){
+        res.json({
+            message: "Please login as administrator to create admin accounts"
+        })
+        return
+    }
+
+    if(req.user.type != "admin" ){
+        res.json({
+            message: "Please login as administrator to create admin accounts"
+        })
+        return
+    }
+
     newUserdata.password = bcrypt.hashSync(newUserdata.password,10)
 
   
@@ -66,10 +80,26 @@ export function loginUser(req,res){
     )
 }
 
-export function deleteUser(req,res){
-    User.deleteOne({email:req.body.email}).then(()=>{
-        res.json({
-            message: "User deleted successfully"
-        })
-    })   
-};
+export function isAdmin(req){
+    if(req.user==null){
+      return false
+    }
+  
+    if(req.user.type != "admin"){
+      return false
+    }
+  
+    return true
+  }
+  
+  export function isCustomer(req){
+    if(req.user==null){
+      return false
+    }
+  
+    if(req.user.type != "customer"){
+      return false
+    }
+  
+    return true
+  }
