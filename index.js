@@ -21,6 +21,8 @@ const connection = mongoose.connection;
 connection.once("open",()=> {
     console.log("Database connected!");
 })
+
+
 app.use(bodyParser.json())
 
 app.use(
@@ -50,6 +52,8 @@ app.use(
 app.use("/api/users",userRouter)
 app.use("/api/products",productsRouter)
 app.use("/api/orders",ordersRouter)
+
+
 
 app.listen(
     5000,
