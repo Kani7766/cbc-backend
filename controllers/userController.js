@@ -30,7 +30,7 @@ export function createUser(req,res){
         res.json({
             message: "User created"
         })
-    }).catch(()=>{
+    }).catch((error)=>{
         res.json({
             message:"User not created"
         })
