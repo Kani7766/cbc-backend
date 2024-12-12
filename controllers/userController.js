@@ -41,7 +41,7 @@ export function loginUser(req,res){
 
     User.find({email : req.body.email}).then(
       (users)=>{
-        if(users.length ==0){
+        if(users.length == 0){
 
             res.json({
                 message: "User not found"
@@ -63,7 +63,7 @@ export function loginUser(req,res){
                     type : user.type,
                     profilePicture : user.profilePicture
 
-                },process.env.SECRET)
+                }, process.env.SECRET)
 
                 res.json({
                     message : "User logged in ",
