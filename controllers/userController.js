@@ -7,20 +7,22 @@ export function createUser(req,res){
 
     const newUserdata = req.body
 
-    if(req.user.type == "admin"){
-        res.json({
-            message: "Please login as administrator to create admin accounts"
-        })
-        return
-    }
+    if(newUserdata.type == "admin"){
 
-    if(req.user.type != "admin" ){
-        res.json({
-            message: "Please login as administrator to create admin accounts"
-        })
-        return
+        if(req.user == null){
+            res.json({
+                message: "Please login as administrator to create admin accounts"
+            })
+            return
+        }
+        if(req.user.type!= "admin"){
+            res.json({
+                message: "Please login as administrator to create admin accounts"
+            })
+            return
+        }
     }
-
+   
     newUserdata.password = bcrypt.hashSync(newUserdata.password,10)
 
   
@@ -103,3 +105,5 @@ export function isAdmin(req){
   
     return true
   }
+
+  
