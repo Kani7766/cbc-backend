@@ -1,4 +1,4 @@
-import Product  from "../models/product.js";
+import Product from "../models/product.js";
 import { isAdmin } from "./userController.js";
 
 export function createProduct(req,res){
@@ -43,7 +43,7 @@ export function deleteProduct(req,res){
 const productId = req.params.productId
 
 
-product.deleteOne(
+Product.deleteOne(
   {productId: productId}
 ).then(()=>{
   res.json({
