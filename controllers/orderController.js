@@ -11,7 +11,8 @@ export async function createOrder(req,res){
   }
 
   try{
-    const latestOrder = await Order.find().sort({date : -1}).limit(1)
+    const latestOrder = await Order.find().sort({date : -1}).limit(1);
+    console.log(latestOrder);
 
     let orderId
 
@@ -29,49 +30,50 @@ export async function createOrder(req,res){
       orderId = "CBC" + newNumber
     }
 
-    const newOrderData = req.body
+    const newOrderData = req.body;
 
 
 
-    const newProductArray = []
+    const newProductArray = [];
     
     for(let i=0;i<newOrderData.orderedItems.length;i++){
 
-        const product = await Product.findOne({
+         const product = await Product.findOne({
           productId : newOrderData.orderedItems[i].productId
-        })
+        });
 
 
         if(product == null){
           res.json({
-            message: "Product with id "+newOrderData.orderedItems[i].productId+" not found"
+            message: "Product with id "+newOrderData.orderedItems[i].productId+" not found",
           })
-          return
+          return;
         }
 
         newProductArray[i] = {
           name : product.productName,
           price : product.price,
           quantity : newOrderData.orderedItems[i].quantity,
-          image : product.images[0]
+          image : product.images[0],
         }
 
     
     }
-    console.log(newProductArray) 
+    console.log(newProductArray);
 
-    newOrderData.orderedItems = newProductArray
+    newOrderData.orderedItems = newProductArray;
  
 
-    newOrderData.orderId = orderId
-    newOrderData.email = req.user.email
+    newOrderData.orderId = orderId;
+    newOrderData.email = req.user.email;
 
-    const order = new Order(newOrderData)
+    const order = new Order(newOrderData);
 
-    await order.save()
+    const savedOrder = await order.save();
 
     res.json({
-      message: "Order created"
+      message: "Order created",
+      order : savedOrder
     })
 
 
@@ -84,15 +86,81 @@ export async function createOrder(req,res){
 
 }
 
-export async function getOrders(req,res){
-  try{
-    const orders = await Order.find({email : req.user.email})
+export async function getOrders(req, res) {
+  
+    
+  try {
+    if (isCustomer(req)) {
+    const orders = await Order.find({ email: req.user.email });
 
-    res.json(orders)
+    res.json(orders);
+    return;
+    }else if(isAdmin(req)){
+      const orders = await Order.find({});
 
-  }catch(error){
+      res.json(orders);
+      return;
+    }else{
+      res.json({
+        message: "Please login to view orders"
+      })
+    }
+  } catch (error) {
     res.status(500).json({
-      message: error.message
-    })
+      message: error.message,
+    });
+  }
+}
+
+export async function getQuote(req, res) {
+  
+  try {
+    const newOrderData = req.body;
+
+    const newProductArray = [];
+
+    let total = 0;
+    let labeledTotal = 0;
+    console.log(req.body)
+
+    for (let i = 0; i < newOrderData.orderedItems.length; i++) {
+      const product = await Product.findOne({
+        productId: newOrderData.orderedItems[i].productId,
+      });
+
+      if (product == null) {
+        res.json({
+          message:
+            "Product with id " +
+            newOrderData.orderedItems[i].productId +
+            " not found",
+        });
+        return;
+      }
+      labeledTotal += product.price * newOrderData.orderedItems[i].qty;
+      total += product.lastPrice * newOrderData.orderedItems[i].qty;
+      newProductArray[i] = {
+        name: product.productName,
+        price: product.lastPrice,
+        labeledPrice: product.price,
+        quantity: newOrderData.orderedItems[i].qty,
+        image: product.images[0],
+      };
+    }
+    console.log(newProductArray);
+    newOrderData.orderedItems = newProductArray;
+    newOrderData.total = total;
+
+    res.json({
+      orderedItems: newProductArray,
+      total: total,
+      labeledTotal: labeledTotal,
+    });
+
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
   }
 }

@@ -19,7 +19,7 @@ export function createProduct(req,res){
       message: "Product created"
     })
   }).catch((error)=>{
-    res.json({
+    res.status(403).json({
       message: error
     })
   })
@@ -30,3 +30,26 @@ export function getProducts(req,res){
     res.json(products)
   })
 }
+
+export function deleteProduct(req,res){
+  if(!isAdmin(req)){
+    res.status(403).json({
+      message: "Please login as administrator to delete products"
+    })
+    return
+  }
+}
+
+const productId = req.params.productId
+
+product.deleteOne(
+  {productId: productId}
+).then(()=>{
+  res.json({
+    message: "Product delete"
+  })
+}).catch((error)=>{
+  res.status(403).json({
+    message: error
+  })
+})
